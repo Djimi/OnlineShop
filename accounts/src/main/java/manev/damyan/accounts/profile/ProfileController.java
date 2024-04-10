@@ -16,8 +16,10 @@ public class ProfileController {
     private ProfileService profileService;
 
     @GetMapping("{id}")
-    public ResponseEntity<Mono<ProfileDTO>> getProfile(@PathVariable("id") String userId) {
-        return ResponseEntity.ok().body(profileService.getProfileById(userId));
+    public Mono<ResponseEntity<ProfileDTO>> getProfile(@PathVariable("id") String userId) {
+        return profileService.getProfileById(userId)
+                .map(profile -> ResponseEntity.ok(profile))
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @PostMapping
@@ -31,16 +33,18 @@ public class ProfileController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Mono<Void>> deleteProfile(@PathVariable("id") String userId) {
-        return ResponseEntity.ok().body(profileService.deleteProfileById(userId));
+    public Mono<ResponseEntity<Void>> deleteProfile(@PathVariable("id") String userId) {
+        return profileService.deleteProfileById(userId).thenReturn(ResponseEntity.ok().build());
     }
 
     @PutMapping("{id}")
-      public ResponseEntity<Mono<ProfileDTO>> createProfile(@RequestBody @Validated ProfileDTO dto, @NotNull @PathVariable("id") String userId) {
+    public Mono<ResponseEntity<ProfileDTO>> createProfile(@RequestBody @Validated ProfileDTO dto,
+            @NotNull @PathVariable("id") String userId) {
         if (!userId.equals(dto.getId())) {
-            return ResponseEntity.badRequest().build();
+            return Mono.just(ResponseEntity.badRequest().build());
         }
-        return ResponseEntity.ok().body(profileService.updateProfile(dto));
+
+        return profileService.updateProfile(dto).map(result -> ResponseEntity.ok(result));
     }
 
 }

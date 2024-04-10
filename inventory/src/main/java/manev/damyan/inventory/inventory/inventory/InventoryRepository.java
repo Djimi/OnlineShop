@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface InventoryRepository extends JpaRepository<Inventory, InventoryId> {
 
-    List<Inventory> findByWarehouseId(Long warehouseId);
+    List<Inventory> findByIdWarehouseId(Long warehouseId);
 
-    List<Inventory> findByItemId(Long itemId);
+    List<Inventory> findByIdItemId(Long itemId);
 }

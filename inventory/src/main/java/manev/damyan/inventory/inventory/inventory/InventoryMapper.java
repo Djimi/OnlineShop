@@ -1,7 +1,5 @@
 package manev.damyan.inventory.inventory.inventory;
 
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import manev.damyan.inventory.inventory.items.Item;
 import manev.damyan.inventory.inventory.items.ItemRepository;
 import manev.damyan.inventory.inventory.warehouse.Warehouse;
@@ -28,7 +26,7 @@ public abstract class InventoryMapper {
     @Mapping(source = "dto", target = ".")
     @Mapping(source = "warehouseId", target = "id.warehouseId")
     @Mapping(source = "itemId", target = "id.itemId")
-    public abstract Inventory convertAddInventoryToEntity(Long warehouseId, Long itemId, AddInventoryDTO dto);
+    public abstract Inventory convertAddInventoryToEntity(Long warehouseId, Long itemId, UpdateInventoryDTO dto);
 
     @Named("getItemReference")
     protected Item getItemReference(Long itemId) {

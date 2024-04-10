@@ -2,10 +2,8 @@ package manev.damyan.inventory.inventory.inventory;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +18,7 @@ public class InventoryController {
 
     @PostMapping({ "/warehouses/{warehouse_id}/items/{item_id}", "/items/{item_id}/warehouses/{warehouse_id}" })
     public ResponseEntity<InventoryDTO> addInventory(@PathVariable("warehouse_id") Long warehouseId,
-            @PathVariable("item_id") Long itemId, @Valid @RequestBody AddInventoryDTO dto) {
+            @PathVariable("item_id") Long itemId, @Valid @RequestBody UpdateInventoryDTO dto) {
         return ResponseEntity.status(HttpStatus.OK).body(inventoryService.addInventory(warehouseId, itemId, dto));
     }
 
@@ -50,6 +48,12 @@ public class InventoryController {
 
     @GetMapping("/items/{item_id}")
     public ResponseEntity<List<InventoryDTO>> getInventoriesForItem(@PathVariable(name = "item_id") Long itemId) {
-        return ResponseEntity.status(HttpStatus.OK).body(inventoryService.getAllInventoriesForItem(itemId));
+        return ResponseEntity.ok(inventoryService.getAllInventoriesForItem(itemId));
+    }
+
+    @PostMapping("/item/{item_id}/decrease")
+    public ResponseEntity<InventoryItemDTO> decreaseItemAmount(@PathVariable(name = "item_id") Long itemId, @RequestBody
+            UpdateInventoryDTO dto) {
+        return ResponseEntity.ok(inventoryService.removeInventory(itemId, dto));
     }
 }

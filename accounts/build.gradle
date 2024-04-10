@@ -32,6 +32,13 @@ dependencies {
 
 }
 
+tasks.named("jar") {
+    enabled = false
+}
+
+tasks.named("bootJar") {
+    archiveFileName = "profiles.jar"
+}
 tasks.named('test') {
     useJUnitPlatform()
 }
