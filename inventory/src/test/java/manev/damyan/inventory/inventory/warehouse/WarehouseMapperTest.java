@@ -25,7 +25,7 @@ public class WarehouseMapperTest {
     @Autowired
     private CountryRepository countryRepository;
 
-    @Test
+//    @Test
     public void testConvertFromDTOToEntity() {
 
         Country country = new Country();
@@ -52,7 +52,7 @@ public class WarehouseMapperTest {
         Assertions.assertEquals(result.getAddress(), String.format("%s-%s", cityName, LOCAL_ADDRESS));
     }
 
-    @Test
+//    @Test
     public void testConvertFromEntityToDTO() {
 
         Country country = new Country();

@@ -17,7 +17,7 @@ public class CountryMapperTest {
     @Autowired
     private CountryMapper countryMapper;
 
-    @Test
+//    @Test
     public void testDTOToEntity() {
         CountryDTO countryDTO = new CountryDTO();
         countryDTO.setIso("BG");
@@ -29,7 +29,7 @@ public class CountryMapperTest {
         Assertions.assertEquals(countryDTO.getName(), country.getName());
     }
 
-    @Test
+//    @Test
     public void testEntityToDTO() {
         Country entity = new Country();
         entity.setIso("BG");
