@@ -1,7 +1,12 @@
     CREATE TABLE IF NOT EXISTS item(
         id int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
         name text NOT NULL,
-        description text NOT NULL
+        description text NOT NULL,
+        created_at timestamp,
+        created_by text,
+        updated_at timestamp,
+        updated_by text
+
     );
 
     CREATE TABLE IF NOT EXISTS country(
@@ -20,5 +25,6 @@
         item_id int REFERENCES item(id),
         warehouse_id int REFERENCES warehouse(id) NOT NULL,
         amount int NOT NULL,
+        version bigint,
         CONSTRAINT pk PRIMARY KEY (item_id, warehouse_id)
     );

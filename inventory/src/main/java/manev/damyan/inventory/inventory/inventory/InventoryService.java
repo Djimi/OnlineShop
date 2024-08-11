@@ -45,13 +45,16 @@ public class InventoryService {
             int takenAmount = Math.min(amountNeeded, currentAmount);
             inventory.setAmount(currentAmount - takenAmount);
             needToTake -= takenAmount;
+            inventoryRepository.save(inventory);
         }
 
-        if (needToTake != 0) {
+        if (needToTake > 0) {
             String message = String.format(
                     "Fail to take the respective amount: [%s] of item with id [%s], because of insufficient resources. Need more: [%s] to complete the request",
                     amountNeeded, itemId, needToTake);
             throw new InsufficientResourceException(message, null, itemId, amountNeeded, amountNeeded - needToTake);
+        } else if (needToTake < 0) {
+            throw new RuntimeException("Taken amount for repository is more than the requested one! That shouldn't happen!");
         }
 
         return new InventoryItemDTO(itemId, amountNeeded);

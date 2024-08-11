@@ -3,10 +3,12 @@ package manev.damyan.inventory.inventory.general;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.InetAddress;
 
+@Component
 @WebFilter
 public class AddHostHeader implements Filter {
     @Override

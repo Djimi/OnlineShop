@@ -26,6 +26,7 @@ public abstract class InventoryMapper {
     @Mapping(source = "dto", target = ".")
     @Mapping(source = "warehouseId", target = "id.warehouseId")
     @Mapping(source = "itemId", target = "id.itemId")
+    @Mapping(target = "version", ignore = true)
     public abstract Inventory convertAddInventoryToEntity(Long warehouseId, Long itemId, UpdateInventoryDTO dto);
 
     @Named("getItemReference")

@@ -21,7 +21,6 @@ public class InventoryService {
     }
 
     public Mono<PurchaseItem> reduceInventory(PurchaseItem item) {
-
         WebClient.ResponseSpec responseSpec = inventoryClient
                 .post()
                 .uri(String.format("/inventories/item/%s/decrease", item.getItemId()))

@@ -1,0 +1,63 @@
+# PostgreSQL Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-inventory-deployment
+  labels: 
+    app: postgres-inventory-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-inventory
+  template:
+    metadata:
+      labels:
+        app: postgres-inventory
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15.4
+          env:
+            - name: POSTGRES_DB
+              value: postgres
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-inventory-secret 
+                  key: postgres-inventory-username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-inventory-secret
+                  key: postgres-inventory-password
+            - name: PG_DATA
+              value: /var/lib/postgresql/data
+          ports:
+            - containerPort: 5432
+          volumeMounts: 
+            - name: postgres-volume
+              mountPath: /var/lib/postgresql/data
+            - name: postgres-db-init-script-volume
+              mountPath: /docker-entrypoint-initdb.d/
+      volumes:
+        - name: postgres-volume
+          persistentVolumeClaim:
+            claimName: postgres-inventory-volume-claim
+          # volumeMounts:
+          #   - name: schema-volume
+          #     mountPath: /docker-entrypoint-initdb.d
+          #     readOnly: true
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-inventory-service
+spec:
+  selector:
+    app: postgres-inventory
+  ports:
+  - protocol: TCP
+    port: 5400
+    targetPort: 5432

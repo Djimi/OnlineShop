@@ -1,0 +1,43 @@
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: postgres-inventory-volume
+#   labels:
+#     type: local
+# spec:
+#   storageClassName: manual
+#   persistentVolumeReclaimPolicy: Delete
+#   capacity:
+#     storage: 10Gi
+#   accessModes:
+#     - ReadWriteOnce
+#   hostPath:
+#     path: "/var/lib/postgresql/data"
+    
+
+# ---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: postgres-inventory-volume-claim
+# spec:
+#   storageClassName: manual
+#   accessModes:
+#     - ReadWriteOnce # the volume can be mounted as read-write by a single node.
+#   resources:
+#     requests:
+#       storage: 10Gi
+#   volumeMode: Filesystem
+#   volumeName: postgres-inventory-volume
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-inventory-volume-claim
+spec:
+  accessModes: [ReadWriteMany]
+  resources:
+   requests:
+    storage: 5Gi

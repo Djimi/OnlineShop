@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: inventory-configmap
+data:
+  inventory_postgres_service_name: postgres-inventory-service
+  inventory_postgres_service_port: "5400"

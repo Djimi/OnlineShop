@@ -1,0 +1,111 @@
+version: "3.8"
+
+services:
+
+  postgres-inventory:
+    image: postgres:15.4
+    ports:
+      - "5433:5432"
+    networks:
+      - backend
+    environment:
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - inventory-volume:/var/lib/postgresql/data
+
+  inventory:
+    image: dpm6/inventory:1.0.0-SNAPSHOT
+    ports:
+      - "8081:8081"
+    networks:
+      - backend
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+    depends_on:
+      - postgres-inventory
+    deploy:
+      replicas: 3
+      # placement: 
+      #   max_replicas_per_node: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      endpoint_mode: vip
+    healthcheck:
+      test: ["CMD", "echo", "some"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    
+  # you can add labels also, etc
+
+  pg-admin:
+    image: dpage/pgadmin4:7.6
+    ports:
+      - "5051:80"
+    networks:
+      - backend
+    environment:
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=password
+
+  profile:
+    image: dpm6/profile:1.0.0-SNAPSHOT
+    ports:
+      - "8082:8082"
+    networks:
+      - backend
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+    depends_on:
+      - profile-mongo
+
+  
+  profile-mongo:
+    image: mongo:7.0.7-jammy
+    ports:
+      - "27018:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=profile_db
+    volumes:
+      - /home/dpm/CodingProjects/OnlineShop/accounts/create_user.js:/docker-entrypoint-initdb.d/create_user.js
+      - profile-volume:/data/db
+    networks:
+      - backend
+
+
+  purchase:
+    image: dpm6/purchase:1.0.0-SNAPSHOT
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+    networks:
+      - backend
+    depends_on:
+      - purchase-mongo
+  
+  purchase-mongo:
+    image: mongo:7.0.7-jammy
+    environment: 
+      - MONGO_INITDB_DATABASE=purchase_db 
+    ports:
+      - "27019:27017"
+    volumes:
+      - /home/dpm/CodingProjects/OnlineShop/Purchase/create_user.js:/docker-entrypoint-initdb.d/create_user.js
+      - purchase-volume:/data/db
+    networks:
+      - backend
+
+
+networks:
+  backend: {}
+
+volumes:
+  inventory-volume:
+  profile-volume:
+  purchase-volume:

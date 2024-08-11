@@ -1,7 +1,10 @@
 package manev.damyan.inventory.inventory.inventory;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import manev.damyan.inventory.inventory.items.Item;
 import manev.damyan.inventory.inventory.warehouse.Warehouse;
 
@@ -9,7 +12,8 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "inventory")
-@Data
+@Getter
+@Setter
 public class Inventory {
 
     @EmbeddedId
@@ -26,7 +30,11 @@ public class Inventory {
     private Warehouse warehouse;
 
     @Column(name = "amount")
+    @Min(0)
     private int amount;
+
+    @Version
+    private long version;
 
     @Override
     public boolean equals(Object o) {

@@ -2,13 +2,21 @@ package manev.damyan.inventory.inventory.inventory;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import manev.damyan.inventory.inventory.exception.ErrorResponse;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/inventories")
 @RequiredArgsConstructor
@@ -53,7 +61,18 @@ public class InventoryController {
 
     @PostMapping("/item/{item_id}/decrease")
     public ResponseEntity<InventoryItemDTO> decreaseItemAmount(@PathVariable(name = "item_id") Long itemId, @RequestBody
-            UpdateInventoryDTO dto) {
+    UpdateInventoryDTO dto) {
         return ResponseEntity.ok(inventoryService.removeInventory(itemId, dto));
     }
+
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleOptimisticLockingException(ObjectOptimisticLockingFailureException e,
+            WebRequest request) {
+
+        log.info("Tried to update entity concurrently!", e);
+        return new ErrorResponse(UUID.randomUUID().toString(), request.getContextPath(),
+                "Concurrent update of entity exists! It is being tried to be updated from multiple users!", null);
+    }
+
 }

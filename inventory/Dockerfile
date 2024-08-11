@@ -1,9 +1,11 @@
-FROM amazoncorretto:21.0.2
+FROM amazoncorretto:21.0.4
+
+RUN yum -y update && yum -y install coreutils net-tools telnet procps
 
 ARG WORKING_DIR=/onlineshop
-RUN mkdir ${WORKING_DIR}
+RUN mkdir /${WORKING_DIR}
 
-COPY /build/libs/inventory.jar /onlineshop
+COPY /build/libs/inventory.jar /${WORKING_DIR}
 
 WORKDIR ${WORKING_DIR}
 
