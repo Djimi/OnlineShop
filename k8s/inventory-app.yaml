@@ -1,0 +1,71 @@
+# Inventory
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-deployment
+  labels: 
+    app: inventory-depl
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: inventory
+  template:
+    metadata:
+      labels:
+        app: inventory
+    spec:
+      containers:
+        - name: inventory
+          image: localhost:32000/dpm6/inventory:1.0.0-SNAPSHOT
+          # The 2 bellow could be used for debugging
+          # command: ["sleep"]
+          # args: ["10000"]
+          imagePullPolicy: Always
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: dev
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: inventory-configmap
+                  key: inventory_postgres_service_name
+            - name: POSTGRES_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: inventory-configmap
+                  key: inventory_postgres_service_port
+            - name: POSTGRES_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-inventory-secret 
+                  key: postgres-inventory-username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-inventory-secret
+                  key: postgres-inventory-password
+          ports:
+            - containerPort: 8081
+          # volumeMounts:
+          #   - name: schema-volume
+          #     mountPath: /docker-entrypoint-initdb.d
+          #     readOnly: true
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-service
+  # annotations:
+  #   metallb.universe.tf/address-pool: dpm-custom-addresspool 
+spec:
+  selector:
+    app: inventory
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 8081
+    targetPort: 8081
+    nodePort: 31000
