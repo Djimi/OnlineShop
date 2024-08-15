@@ -39,11 +39,17 @@ spec:
             - name: postgres-volume
               mountPath: /var/lib/postgresql/data
             - name: postgres-db-init-script-volume
-              mountPath: /docker-entrypoint-initdb.d/
+              mountPath: /docker-entrypoint-initdb.d/schema.sql
+              subPath: schema.sql
+              readOnly: true
       volumes:
         - name: postgres-volume
           persistentVolumeClaim:
             claimName: postgres-inventory-volume-claim
+        - name: postgres-db-init-script-volume
+          persistentVolumeClaim:
+            claimName: postgres-db-init-script-volume-claim
+          
           # volumeMounts:
           #   - name: schema-volume
           #     mountPath: /docker-entrypoint-initdb.d

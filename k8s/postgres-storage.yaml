@@ -27,7 +27,7 @@
 #   resources:
 #     requests:
 #       storage: 10Gi
-#   volumeMode: Filesystem
+#   volumeMode: Filesystems
 #   volumeName: postgres-inventory-volume
 
 ---
@@ -41,3 +41,37 @@ spec:
   resources:
    requests:
     storage: 5Gi
+
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-db-init-script-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  persistentVolumeReclaimPolicy: Delete
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/home/dpm/CodingProjects/OnlineShop/inventory/src/main/resources"
+
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-db-init-script-volume-claim
+spec:
+  storageClassName: manual
+  accessModes: [ReadWriteOnce]
+  resources:
+   requests:
+    storage: 5Gi
+  volumeMode: Filesystem  
+  volumeName: postgres-db-init-script-volume
