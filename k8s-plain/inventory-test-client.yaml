@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http-request-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http-request
+  template:
+    metadata:
+      labels:
+        app: http-request
+    spec:
+      containers:
+      - name: ubuntu-container
+        image: ubuntu:22.04
+        command: ["/bin/bash"]
+        args:
+          - "-c"
+          - |
+            apt-get update && apt-get install -y curl
+            while true; do
+              sleep 2
+              curl -v http://inventory-service:8081/inventories/api/version
+            done
+        stdin: true
+        tty: true

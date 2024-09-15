@@ -1,0 +1,30 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: inventory-app-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: inventory-deployment
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageValue: 800Mi
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 60  # Shorter stabilization window (default is 300 seconds)
+      policies:
+        - type: Percent
+          value: 100  # Scale down 100% (can remove all pods except minReplicas in one go)
+          periodSeconds: 60  # Evaluate every 60 seconds
+    scaleUp:
+      policies:
+        - type: Percent
+          value: 100  # Scale up by 100% if needed
+          periodSeconds: 60  #

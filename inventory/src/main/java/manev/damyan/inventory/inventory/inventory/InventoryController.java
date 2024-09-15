@@ -12,9 +12,9 @@ import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 @RestController
@@ -73,6 +73,26 @@ public class InventoryController {
         log.info("Tried to update entity concurrently!", e);
         return new ErrorResponse(UUID.randomUUID().toString(), request.getContextPath(),
                 "Concurrent update of entity exists! It is being tried to be updated from multiple users!", null);
+    }
+
+    @GetMapping("/api/version")
+    public ResponseEntity<String> getVersion() {
+        return ResponseEntity.ok("1.0.1-SNAPSHOT");
+    }
+
+
+    private static List<String> buffer = Collections.synchronizedList(new ArrayList<>());
+    private static final List<String> INFO = IntStream.range(1, 100001).mapToObj(x -> "SomerandomValue " + x).collect(Collectors.toList());
+    @GetMapping("/scaleTest")
+    public ResponseEntity<String> scaleTest() {
+        buffer.addAll(INFO);
+        return ResponseEntity.ok("The size of the list is: " + buffer.size());
+    }
+
+    @GetMapping("/scaleTestDown")
+    public ResponseEntity<String> scaleTestDown() {
+        buffer.clear();
+        return ResponseEntity.ok("The size of the list is: " + buffer.size());
     }
 
 }
