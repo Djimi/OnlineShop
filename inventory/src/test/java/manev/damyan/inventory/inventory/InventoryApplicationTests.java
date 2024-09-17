@@ -10,7 +10,7 @@ class InventoryApplicationTests {
 
 	@Test
 	void contextLoads() {
-//		throw new IllegalArgumentException("Faillll intentionally!");
+		throw new IllegalArgumentException("Faillll intentionally!");
 	}
 
 }
