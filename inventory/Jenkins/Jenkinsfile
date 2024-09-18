@@ -22,7 +22,7 @@ pipeline {
 
         stage('Basic information') {
             steps {
-                echo 'Maintainer is: {MAINTAINER}'
+                echo 'Maintainer is: ${MAINTAINER}'
             }
         }
 
