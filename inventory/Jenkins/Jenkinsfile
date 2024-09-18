@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    def gitRepoUrl = 'https://github.com/Djimi/OnlineShop.git'
+                    checkout scmGit(
+                    branches: [[name: 'master']],
+                    userRemoteConfigs: [[url: gitRepoUrl])
+                }
+
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Building..'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing..'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying....'
+            }
+        }
+    }
+}
