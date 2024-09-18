@@ -2,13 +2,13 @@ pipeline {
     agent any
 
     environment {
-        MAINTAINER=DPM
+        MAINTAINER="DPM"
     }
 
     stages {
         stage('Checkout') {
            environment {
-                LOCAL_VAR_CHECK=LOCAL_VALUE
+                LOCAL_VAR_CHECK="LOCAL_VALUE"
             }
             steps {
                 script {
