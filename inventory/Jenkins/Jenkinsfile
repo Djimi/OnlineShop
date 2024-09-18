@@ -1,8 +1,15 @@
 pipeline {
     agent any
 
+    environment {
+        MAINTAINER=DPM
+    }
+
     stages {
         stage('Checkout') {
+           environment {
+                LOCAL_VAR_CHECK=LOCAL_VALUE
+            }
             steps {
                 script {
                     def gitRepoUrl = 'https://github.com/Djimi/OnlineShop.git'
@@ -10,6 +17,12 @@ pipeline {
                     branches: [[name: 'main']],
                     userRemoteConfigs: [[url: gitRepoUrl]])
                 }
+            }
+        }
+
+        stage('Basic information') {
+            steps {
+                echo 'Maintainer is: {MAINTAINER}'
             }
         }
 
