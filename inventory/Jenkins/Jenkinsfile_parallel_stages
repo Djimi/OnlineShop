@@ -31,25 +31,23 @@ pipeline {
                 stage ('Build 1') {
                     steps {
                         echo 'First build start'
-                        sleep 2m
+                        sleep time: 120, unit: 'SECONDS'
                         echo 'First build end'
                     }
                 }
 
                 stage ('Build 2') {
                     steps {
-
                         echo 'Second build start'
-                        sleep 2m
+                        sleep time: 120, unit: 'SECONDS'
                         echo 'Second build end'
                     }
                 }
 
                 stage ('Build 3') {
                     steps {
-
                         echo 'Third build start'
-                        sleep 2m
+                        sleep time: 120, unit: 'SECONDS'
                         echo 'Third build end'
                     }
                 }
