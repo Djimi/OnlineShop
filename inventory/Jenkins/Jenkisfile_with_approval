@@ -1,0 +1,61 @@
+pipeline {
+    agent any
+
+    environment {
+        MAINTAINER="DPM"
+    }
+
+    stages {
+        stage('Checkout') {
+           environment {
+                LOCAL_VAR_CHECK="LOCAL_VALUE"
+            }
+            steps {
+                script {
+                    def gitRepoUrl = 'https://github.com/Djimi/OnlineShop.git'
+                    checkout scmGit(
+                    branches: [[name: 'main']],
+                    userRemoteConfigs: [[url: gitRepoUrl]])
+                }
+            }
+        }
+
+        stage('Basic information') {
+            steps {
+                echo "Maintainer is: ${MAINTAINER}"
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Building..'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Testing..'
+            }
+        }
+
+        stage('Deploy') {
+            input {
+                message 'Want to deploy?'
+                ok 'Do it!'
+                parameters {
+                    string(name: 'TARGET_ENVIRONMENT', defaultValue: 'PROD', description: 'Environment where you would like to deploy')
+                }
+            }
+
+            steps {
+                echo "Deploying on ${TARGET_ENVIRONMENT}"
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Post deploy test message'
+        }
+    }
+}
