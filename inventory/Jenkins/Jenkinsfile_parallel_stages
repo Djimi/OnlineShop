@@ -22,7 +22,7 @@ pipeline {
 
         stage('Basic information') {
             steps {
-                echo "Maintainer is: ${MAINTAINER}"
+                printInitInfo()
             }
         }
 
@@ -81,4 +81,10 @@ pipeline {
             echo 'Post deploy test message'
         }
     }
+}
+
+void printInitInfo() {
+    echo "Maintainer is: ${MAINTAINER}"
+    echo "Hi there, we will start the build shortly"
+    echo "Keep in mind that this is just a test project"
 }
