@@ -1,3 +1,4 @@
+#!/usr/bin/env groovy
 pipeline {
     agent any
 
@@ -11,12 +12,13 @@ pipeline {
                 LOCAL_VAR_CHECK="LOCAL_VALUE"
             }
             steps {
-                script {
-                    def gitRepoUrl = 'https://github.com/Djimi/OnlineShop.git'
-                    checkout scmGit(
-                    branches: [[name: 'main']],
-                    userRemoteConfigs: [[url: gitRepoUrl]])
-                }
+                echo "Placeholder for checking our repository"
+//                 script {
+//                     def gitRepoUrl = 'https://github.com/Djimi/OnlineShop.git'
+//                     checkout scmGit(
+//                     branches: [[name: 'main']],
+//                     userRemoteConfigs: [[url: gitRepoUrl]])
+//                 }
             }
         }
 
