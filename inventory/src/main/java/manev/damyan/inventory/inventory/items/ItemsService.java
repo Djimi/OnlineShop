@@ -1,6 +1,7 @@
 package manev.damyan.inventory.inventory.items;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ItemsService {
 
     private final ItemRepository itemRepository;
@@ -53,7 +55,7 @@ public class ItemsService {
 
     @Transactional //this is needed, because of the pessimistic locking
     public Optional<ItemDTO> getItem(long id) {
-        System.out.println("Inside getItemId");
+        log.debug("Inside getItemId");
         Optional<Item> entity = itemRepository.findById(id);
 
         if (!entity.isPresent()) {

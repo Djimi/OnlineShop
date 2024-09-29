@@ -1,5 +1,6 @@
 package manev.damyan.inventory.inventory.items;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
@@ -12,12 +13,13 @@ import java.sql.Connection;
 
 @Component
 @Aspect
+@Slf4j
 public class DataSourceAspect {
 
     @Around("target(javax.sql.DataSource)")
     public Object logDataSourceConnectionInfo(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         Signature signature = proceedingJoinPoint.getSignature();
-        System.out.println("[DPM] Datasource tracker. Method called: " + signature + ". Class intercepted is:" + proceedingJoinPoint.getTarget().getClass().getName());
+        log.debug("[DPM] Datasource tracker. Method called: " + signature + ". Class intercepted is:" + proceedingJoinPoint.getTarget().getClass().getName());
 
         Object result = proceedingJoinPoint.proceed();
 
@@ -29,7 +31,7 @@ public class DataSourceAspect {
             return proxiedConnection;
         }
 
-        System.out.println("[DPM] Connection returned in the aspec is: " + result);
+        log.debug("[DPM] Connection returned in the aspec is: " + result);
         return result;
     }
 }

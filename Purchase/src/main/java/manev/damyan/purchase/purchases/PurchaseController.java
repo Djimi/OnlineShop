@@ -2,6 +2,7 @@ package manev.damyan.purchase.purchases;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import manev.damyan.purchase.exception.ErrorResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/purchases")
 @AllArgsConstructor
+@Slf4j
 public class PurchaseController {
 
     private PurchaseService purchaseService;
@@ -31,6 +33,7 @@ public class PurchaseController {
 
     @GetMapping
     public ResponseEntity<List<PurchaseDTO>> getAllPurchases() {
+        log.info("All purchase endpoint hit!");
         return ResponseEntity.ok(purchaseService.getAllPurchases());
     }
 

@@ -8,9 +8,6 @@ pipeline {
 
     stages {
         stage('Checkout') {
-           environment {
-                LOCAL_VAR_CHECK="LOCAL_VALUE"
-            }
             steps {
                 echo "Placeholder for checking our repository"
 //                 script {
@@ -22,9 +19,9 @@ pipeline {
             }
         }
 
-        stage('Basic information') {
+        stage('Print basic information') {
             steps {
-                echo "Maintainer is: ${MAINTAINER}"
+                printBasicInfo()
             }
         }
 
@@ -46,4 +43,9 @@ pipeline {
             }
         }
     }
+}
+
+void printBasicInfo() {
+    echo "Maintainer is: ${MAINTAINER}"
+    echo "This is simple test pipeline, no worries ^_^"
 }

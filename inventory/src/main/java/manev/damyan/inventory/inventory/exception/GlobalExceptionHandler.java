@@ -1,6 +1,7 @@
 package manev.damyan.inventory.inventory.exception;
 
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -23,7 +26,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleNotPredictedException(Exception e, WebRequest request) {
 
-        System.out.println("Exception occured!");
+        log.debug("Exception occured!");
         e.printStackTrace();
 
         HashMap<String, Object> additionalInformation = new HashMap<>();
@@ -42,7 +45,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleConstraintException(ConstraintViolationException e, WebRequest request) {
 
-        System.out.println("Constraint validation occurred!");
+        log.debug("Constraint validation occurred!");
         e.printStackTrace();
 
         HashMap<String, Object> additionalInformation = new HashMap<>();
@@ -66,7 +69,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e, WebRequest request) {
 
-        System.out.println("Argument not valid exception occurred!");
+        log.debug("Argument not valid exception occurred!");
         e.printStackTrace();
 
         HashMap<String, Object> additionalInformation = new HashMap<>();
@@ -83,6 +86,15 @@ public class GlobalExceptionHandler {
                 request.getContextPath(),
                 "Exception while validation input parameters!",
                 additionalInformation);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(NoResourceFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public void handleMethodArgumentNotValidException(NoResourceFoundException e, WebRequest request)
+            throws NoResourceFoundException {
+
+        log.debug("NoResourceFoundException exception occurred!");
     }
 
 }

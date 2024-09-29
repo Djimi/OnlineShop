@@ -1,11 +1,13 @@
 package manev.damyan.inventory.inventory.items;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aopalliance.intercept.Invocation;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 
+@Slf4j
 public class ConnectionInvocationHandler implements InvocationHandler {
 
     private Connection connection;
@@ -17,7 +19,7 @@ public class ConnectionInvocationHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
-        System.out.println("[DPM] Connection trace: " + method.toGenericString());
+        log.debug("[DPM] Connection trace: " + method.toGenericString());
 
         Object returnValue = method.invoke(connection, args);
         return returnValue;

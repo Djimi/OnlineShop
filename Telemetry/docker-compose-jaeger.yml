@@ -1,0 +1,13 @@
+version: '2.5'
+
+services:
+  jaeger-all-in-one:
+    container_name: jaeger2
+    image: jaegertracing/all-in-one:latest
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    restart: always
+    ports:
+      - 16686:16686  # Expose Jaeger UI
+      - 14250:14250
+
