@@ -21,6 +21,7 @@ public class InventoryService {
     }
 
     public Mono<PurchaseItem> reduceInventory(PurchaseItem item) {
+
         WebClient.ResponseSpec responseSpec = inventoryClient
                 .post()
                 .uri(String.format("/inventories/item/%s/decrease", item.getItemId()))
@@ -29,12 +30,20 @@ public class InventoryService {
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve();
 
-        return responseSpec
+        return
+                Mono.fromCallable(() -> {
+//                    try {
+//                        Thread.sleep(800);
+//                    } catch (InterruptedException e) {
+//                        throw new RuntimeException(e);
+//                    }
+                    return null;
+                }).then(responseSpec
                 .onStatus(HttpStatus.NOT_FOUND::equals,
                         response -> Mono.error(new IncorrectOrderDataException(String.format("Item with id [%s] doesn't exist", item.getItemId()))))
                 .onStatus(HttpStatus.UNPROCESSABLE_ENTITY::equals,
                         response -> Mono.error(new IncorrectOrderDataException( String.format("Insufficient amount [%s] for item with id [%s]", item.getAmount(),item.getItemId()))))
                 .toEntity(PurchaseItem.class)
-                .map(ResponseEntity::getBody);
+                .map(ResponseEntity::getBody));
     }
 }

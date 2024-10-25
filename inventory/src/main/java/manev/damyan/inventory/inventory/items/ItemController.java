@@ -8,7 +8,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import lombok.extern.slf4j.Slf4j;
 import manev.damyan.inventory.inventory.exception.ErrorResponse;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,6 +34,7 @@ is not such, so it will not be validated if that annotation is missing
 In practice if yoy miss this validation still the id will be validated, but
 different exception will be thrown
  */
+@Slf4j
 public class ItemController {
 
     private ItemsService itemsService;
@@ -90,13 +93,20 @@ public class ItemController {
         return ResponseEntity.status(HttpStatus.OK).body(itemsService.getAllByNameInsensitive(nameInsensitive));
     }
 
+//    @Cacheable("items-cached")
+//    @GetMapping("cached")
+//    public ResponseEntity<List<ItemDTO>> getItemsWithCache() {
+//        return ResponseEntity.status(HttpStatus.OK).body(itemsService.getAllItems());
+//    }
+
     @GetMapping
+    @Loggable
     public ResponseEntity<List<ItemDTO>> getItems() {
         return ResponseEntity.status(HttpStatus.OK).body(itemsService.getAllItems());
     }
 
     @GetMapping(params = "name")
-    public ResponseEntity<Optional<List<Item>>> getItemsByName(@RequestParam String name) {
+    public ResponseEntity<List<ItemDTO>> getItemsByName(@RequestParam String name) {
         return ResponseEntity.status(HttpStatus.OK).body(itemsService.getAllByName(name));
     }
 
@@ -122,6 +132,7 @@ public class ItemController {
                 .header("Page-number-of-elements", String.valueOf(paginated.getTotalElements()))
                 .body(paginated.stream().toList());
     }
+
 
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteItem(@PathVariable(name = "id") long id) {

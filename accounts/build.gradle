@@ -30,9 +30,16 @@ dependencies {
     implementation 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
 
-    implementation("io.micrometer:micrometer-tracing-bridge-otel")
-    implementation("io.micrometer:micrometer-registry-otlp")
-    implementation("io.opentelemetry:opentelemetry-exporter-otlp")
+//    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+//    implementation 'io.micrometer:micrometer-tracing'
+//    implementation 'io.micrometer:micrometer-tracing-bridge-otel'
+//    implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
+
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+    implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
+
 
 }
 

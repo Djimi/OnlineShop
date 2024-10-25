@@ -37,7 +37,7 @@ public interface ItemRepository extends JpaRepository<Item, Long>, PagingAndSort
     @Lock(LockModeType.PESSIMISTIC_READ)
     <S extends Item> Page<S> findAll(Example<S> example, Pageable pageable);
 
-    Optional<List<Item>> findByName(String name);
+    List<Item> findByName(String name);
 
     @Query("SELECT i FROM Item i where UPPER(i.name) = UPPER(:nameCaseInsensitive)")
     Optional<List<Item>> findByNameInsensitive(@Param("nameCaseInsensitive") String nameInsensitive);

@@ -1,13 +1,19 @@
 package manev.damyan.inventory.inventory.items;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 @Schema(
         name = "Item",
         description = "This is schema for item!"
 )
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ItemDTO {
 
     @Schema(

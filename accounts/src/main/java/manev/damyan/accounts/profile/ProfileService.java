@@ -14,6 +14,11 @@ public class ProfileService {
     private ProfileMapper mapper;
 
     public Mono<ProfileDTO> getProfileById(String id) {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         return profileRepository.findById(id).map(mapper::convertEntityToDTO);
     }
 

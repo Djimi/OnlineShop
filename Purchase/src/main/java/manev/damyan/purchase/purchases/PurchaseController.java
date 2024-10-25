@@ -26,6 +26,7 @@ public class PurchaseController {
 
     @GetMapping("{id}")
     public ResponseEntity<PurchaseDTO> getPurchase(@PathVariable("id") String id) {
+        log.info("Requesting purchase with id: " + id);
         return purchaseService.getPurchase(id)
                 .map(x -> ResponseEntity.ok(x))
                 .orElseGet(() -> ResponseEntity.notFound().build());

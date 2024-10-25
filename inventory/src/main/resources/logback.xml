@@ -4,6 +4,8 @@
     <property name="LOGS" value="./logs" />
     <property name="logPattern" value="%d %-5level [%thread] [%X{traceId:-},%X{spanId:-}] %logger{0}: %msg%n"/>
 
+<!--    <logger name="org.springframework" level="DEBUG" />-->
+
     <appender name="Console"
         class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">

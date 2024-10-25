@@ -1,5 +1,6 @@
 package manev.damyan.inventory.inventory.inventory;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.server.ServerWebExchange;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -61,7 +63,7 @@ public class InventoryController {
 
     @PostMapping("/item/{item_id}/decrease")
     public ResponseEntity<InventoryItemDTO> decreaseItemAmount(@PathVariable(name = "item_id") Long itemId, @RequestBody
-    UpdateInventoryDTO dto) {
+    UpdateInventoryDTO dto, HttpServletRequest request) {
         return ResponseEntity.ok(inventoryService.removeInventory(itemId, dto));
     }
 

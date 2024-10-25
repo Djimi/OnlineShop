@@ -2,6 +2,7 @@ package manev.damyan.purchase.profile;
 
 import manev.damyan.purchase.config.ServicesConfig;
 import manev.damyan.purchase.purchases.IncorrectOrderDataException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,12 @@ public class ProfileService {
 
     public Mono<ProfileDTO> getProfile(String id) {
 
-          WebClient.ResponseSpec responseSpec = profileClient
+//        try {
+//            Thread.sleep(300);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+        WebClient.ResponseSpec responseSpec = profileClient
                 .get()
                 .uri(String.format("/profiles/%s", id))
                 .accept(MediaType.APPLICATION_JSON)
@@ -30,7 +36,13 @@ public class ProfileService {
         return responseSpec
                 .onStatus(HttpStatus.NOT_FOUND::equals,
                         response -> Mono.error(new IncorrectOrderDataException(String.format("Profile with id [%s] doesn't exist", id))))
+
                 .toEntity(ProfileDTO.class)
+                .doOnSuccess(responseEntity -> {
+                    if (responseEntity != null) {
+                        HttpHeaders headers = responseEntity.getHeaders();
+                    }
+                })
                 .map(ResponseEntity::getBody);
     }
 

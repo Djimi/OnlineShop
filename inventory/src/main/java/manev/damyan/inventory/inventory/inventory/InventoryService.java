@@ -1,6 +1,9 @@
 package manev.damyan.inventory.inventory.inventory;
 
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationRegistry;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,11 +13,14 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class InventoryService {
 
     private final InventoryRepository inventoryRepository;
 
     private final InventoryMapper inventoryMapper;
+
+    private final ObservationRegistry registry;
 
     public InventoryDTO addInventory(Long warehouseId, Long itemId, UpdateInventoryDTO dto) {
 
@@ -34,6 +40,32 @@ public class InventoryService {
 
     @Transactional
     public InventoryItemDTO removeInventory(Long itemId, UpdateInventoryDTO dto) {
+
+        var observation = Observation.createNotStarted("fetch-commit", registry).start();
+
+        try (var ignored = observation.openScope()) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            observation.highCardinalityKeyValue("slowDPM.operation.message", "Thread sleep for 1 second");
+            observation.event(Observation.Event.of("fake-slop-op"));
+        } finally {
+            observation.stop();
+        }
+
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        new Thread(() -> {
+            log.info("This is just a log from another thread ^_^");
+        }).start();
+
         List<Inventory> inventories = inventoryRepository.findByIdItemId(itemId);
 
         int amountNeeded = dto.getAmount();
@@ -54,7 +86,8 @@ public class InventoryService {
                     amountNeeded, itemId, needToTake);
             throw new InsufficientResourceException(message, null, itemId, amountNeeded, amountNeeded - needToTake);
         } else if (needToTake < 0) {
-            throw new RuntimeException("Taken amount for repository is more than the requested one! That shouldn't happen!");
+            throw new RuntimeException(
+                    "Taken amount for repository is more than the requested one! That shouldn't happen!");
         }
 
         return new InventoryItemDTO(itemId, amountNeeded);

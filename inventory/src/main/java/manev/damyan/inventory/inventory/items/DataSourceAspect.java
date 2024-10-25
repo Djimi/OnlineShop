@@ -11,8 +11,8 @@ import org.postgresql.jdbc.PgConnection;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
 
-@Component
-@Aspect
+//@Component
+//@Aspect
 @Slf4j
 public class DataSourceAspect {
 
