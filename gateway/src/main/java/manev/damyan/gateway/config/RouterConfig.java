@@ -15,11 +15,18 @@ public class RouterConfig {
     @Bean
     public RouteLocator myRouter(RouteLocatorBuilder builder) {
         Endpoint inventoryServiceEndpoint = servicesEndpoints.getInventoryService();
+        Endpoint authServiceEndpoint = servicesEndpoints.getAuthService();
         return builder.routes()
                 .route(p -> p
                         .path("/items")
                         .filters(f -> f.addRequestHeader("Source", "ApiGateway"))
-                        .uri(String.format("http://%1$s:%2$s", inventoryServiceEndpoint.getHost(), inventoryServiceEndpoint.getPort())))
+                        .uri(String.format("http://%1$s:%2$s", inventoryServiceEndpoint.getHost(),
+                                inventoryServiceEndpoint.getPort())))
+                .route(p -> p
+                        .path("/user")
+                        .filters(f -> f.addRequestHeader("Source", "ApiGateway"))
+                        .uri(String.format("http://%1$s:%2$s", authServiceEndpoint.getHost(),
+                                authServiceEndpoint.getPort())))
                 .build();
     }
 }
