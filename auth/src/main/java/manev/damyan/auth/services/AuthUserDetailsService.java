@@ -18,8 +18,6 @@ public class AuthUserDetailsService implements UserDetailsService {
 
     private UserRepository userRepository;
 
-    private PasswordEncoder passwordEncoder;
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByUsername(username);

@@ -27,6 +27,11 @@ public class RouterConfig {
                         .filters(f -> f.addRequestHeader("Source", "ApiGateway"))
                         .uri(String.format("http://%1$s:%2$s", authServiceEndpoint.getHost(),
                                 authServiceEndpoint.getPort())))
+                .route(p -> p.path("/login-with-google")
+                        .filters(f -> f.addRequestHeader("Source", "ApiGatew")
+                                .rewritePath("/login-with-google", "/oauth-google"))
+                        .uri(String.format("http://%1$s:%2$s", authServiceEndpoint.getHost(),
+                                authServiceEndpoint.getPort())))
                 .build();
     }
 }
