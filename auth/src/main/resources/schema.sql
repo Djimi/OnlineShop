@@ -4,3 +4,8 @@ CREATE TABLE IF NOT EXISTS users (
     hashed_password VARCHAR(255) NOT NULL,
     type VARCHAR(50) CHECK (type IN ('basic', 'moderator', 'admin')) NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS tokens (
+    token text NOT NULL UNIQUE,
+    username VARCHAR(255) NOT NULL
+);

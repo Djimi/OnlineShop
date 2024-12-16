@@ -2,18 +2,22 @@ package manev.damyan.inventory.inventory.items;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import manev.damyan.inventory.inventory.config.kafka.KafkaConfig;
 import manev.damyan.inventory.inventory.inventory.cache.RedisInventoryItem;
 import manev.damyan.inventory.inventory.inventory.cache.RedisItemRepository;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,8 +35,10 @@ public class ItemsService {
 
     private final ItemMapper mapper;
 
+    private final KafkaTemplate kafkaTemplate;
+
     @Transactional //this is needed, because of the pessimistic locking
-    @CacheEvict(cacheNames = ITEMS_CACHE, key = ALL)
+//    @CacheEvict(cacheNames = ITEMS_CACHE, key = ALL)
     public boolean update(ItemDTO dto) {
         boolean existing = itemRepository.findByIdWithPessimisticLock(dto.getId()).isPresent();
         itemRepository.save(mapper.convertToEntity(dto));
@@ -40,7 +46,7 @@ public class ItemsService {
     }
 
     @Transactional //this is needed, because of the pessimistic locking
-    @CacheEvict(cacheNames = ITEMS_CACHE, key = ALL)
+//    @CacheEvict(cacheNames = ITEMS_CACHE, key = ALL)
     public ItemDTO create(ItemDTO dto) {
 
         Item savedItem = itemRepository.save(mapper.convertToEntity(dto));
@@ -48,8 +54,8 @@ public class ItemsService {
                 new RedisInventoryItem(savedItem.getId(), savedItem.getName(), savedItem.getDetailedDescription()));
         return mapper.convertToDTO(savedItem);
     }
+//    @CacheEvict(cacheNames = ITEMS_CACHE, key = ALL)
 
-    @CacheEvict(cacheNames = ITEMS_CACHE, key = ALL)
     @Transactional
     public boolean deleteItem(long id) {
         if (!itemRepository.findByIdWithPessimisticLock(id).isPresent()) {
@@ -61,7 +67,7 @@ public class ItemsService {
     }
 
     @Loggable
-    @Cacheable(cacheNames = ITEMS_CACHE, key = ALL)
+//    @Cacheable(cacheNames = ITEMS_CACHE, key = ALL)
     public List<ItemDTO> getAllItems() {
         return itemRepository.findAll().stream().map(mapper::convertToDTO).collect(Collectors.toList());
     }
@@ -75,6 +81,21 @@ public class ItemsService {
     @Transactional //this is needed, because of the pessimistic locking
     public Optional<ItemDTO> getItem(long id) {
         log.debug("Inside getItemId");
+
+        CompletableFuture<SendResult<String, String>> send = kafkaTemplate.send(KafkaConfig.ITEMS_TOPIC,
+                String.valueOf(id), "ItemSearched: " + id);
+        send.whenComplete((result, e) -> {
+
+            Logger testLogger = LoggerFactory.getLogger("manev.damyan.inventory.inventory.config.kafka");
+            if (e == null) {
+                testLogger.info("Sending event for " + id + " completed!. The event send is: " + result.getProducerRecord()
+                                + " and the metadata is: " + result.getRecordMetadata());
+
+            } else {
+                testLogger.info(
+                        "Exception while sending event for : " + id + "!");
+            }
+        });
 
         Optional<RedisInventoryItem> redisItem = redisItemRepository.findById(id);
 

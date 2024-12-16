@@ -49,7 +49,7 @@ public class GoogleAuthController {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
+        httpHeaders.setBasicAuth(null, null);
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("code", code);
