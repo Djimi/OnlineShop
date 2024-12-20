@@ -26,8 +26,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleNotPredictedException(Exception e, WebRequest request) {
 
-        log.debug("Exception occured!");
-        e.printStackTrace();
+        log.debug("Exception occurred!", e);
 
         HashMap<String, Object> additionalInformation = new HashMap<>();
 

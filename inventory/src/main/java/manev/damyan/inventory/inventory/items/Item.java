@@ -17,6 +17,9 @@ public class Item extends AuditEntity{
     @Column(name = "name")
     private String name;
 
+    @Column(name = "type")
+    private String type;
+
     @Column(name = "description")
     private String detailedDescription;
 

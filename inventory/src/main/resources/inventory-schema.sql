@@ -1,6 +1,7 @@
     CREATE TABLE IF NOT EXISTS item(
         id int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
         name text NOT NULL,
+        type text NOT NULL,
         description text NOT NULL
     );
 

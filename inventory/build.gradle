@@ -46,7 +46,6 @@ dependencies {
 //    implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
 
 
-
     implementation 'io.micrometer:micrometer-registry-prometheus'
     implementation 'io.micrometer:micrometer-tracing-bridge-brave'
     implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
@@ -56,6 +55,9 @@ dependencies {
 //    implementation("io.micrometer:micrometer-registry-otlp")
 //    implementation("io.opentelemetry:opentelemetry-exporter-otlp")
 
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     implementation 'org.springframework.kafka:spring-kafka'
@@ -74,4 +76,9 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+task deleteLogs(type: Delete) {
+    File srcDir = project.layout.projectDirectory.dir("logs").asFile
+    println(srcDir.toString())
+    delete srcDir
+}
 

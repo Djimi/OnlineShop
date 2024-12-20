@@ -17,5 +17,7 @@ public class RedisInventoryItem {
     @Indexed
     private String name;
 
+    private String type;
+
     private String detailedDescription;
 }

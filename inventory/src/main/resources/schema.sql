@@ -2,6 +2,7 @@
         id int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
         name text NOT NULL,
         description text NOT NULL,
+        type text NOT NULL,
         created_at timestamp,
         created_by text,
         updated_at timestamp,
