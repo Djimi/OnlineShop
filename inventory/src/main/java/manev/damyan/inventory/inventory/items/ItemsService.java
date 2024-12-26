@@ -3,6 +3,7 @@ package manev.damyan.inventory.inventory.items;
 import brave.internal.extra.MapExtra;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import manev.damyan.inventory.inventory.config.kafka.KafkaConfig;
@@ -13,6 +14,7 @@ import org.apache.kafka.common.header.internals.RecordHeader;
 import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -49,6 +51,14 @@ public class ItemsService {
     private final KafkaTemplate kafkaTemplate;
 
     private final ObjectMapper jsonMapper;
+
+    @Value("${postgres.port}")
+    private String testVar;
+
+    @PostConstruct
+    public void afterConstruct(){
+        log.info("test Variable has value: " + testVar);
+    }
 
     @Transactional //this is needed, because of the pessimistic locking
     //    @CacheEvict(cacheNames = ITEMS_CACHE, key = ALL)
