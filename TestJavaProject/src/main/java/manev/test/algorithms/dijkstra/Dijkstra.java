@@ -1,15 +1,14 @@
-package manev.test.algorythms.dijkstra;
+package manev.test.algorithms.dijkstra;
 
 import com.google.common.graph.Graph;
 import lombok.Data;
 
-import java.lang.annotation.Target;
 import java.util.*;
 
 public class Dijkstra {
     public static void main(String[] args) {
 
-        Graph graph = new Graph();
+        Graph graph = new Graph(false);
         graph.addEdge(0, 1, 2);
         graph.addEdge(0, 2, 6);
         graph.addEdge(1, 3, 5);
@@ -20,7 +19,7 @@ public class Dijkstra {
         graph.addEdge(4, 6, 2);
         graph.addEdge(5, 6, 6);
 
-        Graph graph2 = new Graph();
+        Graph graph2 = new Graph(false);
 
         graph2.addEdge(0, 1, 4);
         graph2.addEdge(0, 7, 8);
@@ -37,16 +36,92 @@ public class Dijkstra {
         graph2.addEdge(3, 5, 14);
         graph2.addEdge(4, 5, 10);
 
-        int[] parent = new int[graph2.getNumberOfVertexes()];
-        List<Integer> shortestPath = shortestPathByDijkstraUsingMinHeapPersistingParent(graph2, parent,0);
+        Graph graph3 = new Graph(true);
+        graph3.addEdge(0, 1, 1);
+        graph3.addEdge(0, 2, 1);
+        graph3.addEdge(1, 2, 1);
+        graph3.addEdge(2, 3, 1);
+        graph3.addEdge(2, 0, 1);
+        graph3.addEdge(3, 3, 1);
 
-        System.out.println("Shortest paths are: " + Arrays.asList(shortestPath));
-        System.out.println("Shortest path for 8 is: " + getShortestPath(parent, 8));
-        System.out.println("Shortest path for 4 is: " + getShortestPath(parent, 4));
+        //        int[] parent = new int[graph2.getNumberOfVertexes()];
+        //        List<Integer> shortestPath = shortestPathByDijkstraUsingMinHeapPersistingParent(graph2, parent, 0);
+        //
+        //        System.out.println("Shortest paths are: " + Arrays.asList(shortestPath));
+        //        System.out.println("Shortest path for 8 is: " + getShortestPath(parent, 8));
+        //        System.out.println("Shortest path for 4 is: " + getShortestPath(parent, 4));
+
+        iterativeDFS(graph3, 0);
+
+        for (int i = 0; i < 50; ++i) {
+            Runnable r = () -> {
+
+                int x = 1;
+                while (1 == 1) {
+                    ++x;
+                }
+
+            };
+
+            new Thread(r).start();
+        }
     }
 
-    private static String getShortestPath(int[] parent, int target){
-        if(parent[target] == -1){
+    private static void iterativeDFS(Graph graph, int startIndex) {
+
+        boolean[] visited = new boolean[graph.getNumberOfVertexes()];
+
+        Deque<IterativeEdge> stack = new ArrayDeque<>();
+        List<Edge> adjacents = graph.getAdjacents(startIndex);
+        System.out.println("Visiting: " + startIndex);
+        visited[startIndex] = true;
+        if (adjacents.size() > 0) {
+            stack.addFirst(new IterativeEdge(startIndex, 0));
+        }
+
+        while (!stack.isEmpty()) {
+            IterativeEdge lastVertex = stack.getFirst();
+
+            int currentVertex = graph.getAdjacents(lastVertex.getIndex()).get(lastVertex.getNextAdjacent()).getDestNode();
+            System.out.println("Visiting: " + currentVertex);
+            visited[currentVertex] = true;
+
+            int nextVertex = currentVertex;
+            int nextAdjIndex = 0;
+            boolean nextVertexFound = false;
+
+            while (!nextVertexFound && !stack.isEmpty()) {
+                List<Edge> nextAdj = graph.getAdjacents(nextVertex);
+
+                for (int i = nextAdjIndex; i < nextAdj.size(); ++i) {
+                    if (visited[nextAdj.get(i).getDestNode()] == false) {
+                        stack.addFirst(new IterativeEdge(nextVertex, i));
+                        nextVertexFound = true;
+                        break;
+                    }
+                }
+
+                if (!nextVertexFound) {
+                    //go one level back
+                    IterativeEdge tmp = stack.removeFirst();
+                    nextVertex = tmp.getIndex();
+                    nextAdjIndex = tmp.getNextAdjacent() + 1;
+                }
+            }
+        }
+
+    }
+
+    @Data
+    private static class IterativeEdge {
+
+        private final int index;
+
+        private final int nextAdjacent;
+    }
+
+    private static String getShortestPath(int[] parent, int target) {
+        if (parent[target] == -1) {
             return Integer.toString(target);
         }
 
@@ -163,6 +238,8 @@ public class Dijkstra {
     @Data
     private static class Graph {
 
+        private final boolean isDirected;
+
         private List<List<Edge>> edges = new ArrayList<>();
 
         //        public void init(int numberOfVertexes) {
@@ -187,7 +264,9 @@ public class Dijkstra {
             }
 
             edges.get(source).add(new Edge(destination, weight));
-            edges.get(destination).add(new Edge(source, weight));
+            if (!isDirected) {
+                edges.get(destination).add(new Edge(source, weight));
+            }
         }
     }
 

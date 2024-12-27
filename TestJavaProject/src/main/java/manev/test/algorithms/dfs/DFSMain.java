@@ -1,4 +1,4 @@
-package manev.test.algorythms.dfs;
+package manev.test.algorithms.dfs;
 
 import java.util.*;
 

@@ -1,7 +1,6 @@
-package manev.test.algorythms.bfs;
+package manev.test.algorithms.bfs;
 
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Queue;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;

@@ -1,4 +1,4 @@
-package manev.test.algorythms.cyclecheck;
+package manev.test.algorithms.cyclecheck;
 
 import java.util.ArrayList;
 import java.util.List;
