@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.*;
 
 public class Dijkstra {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         Graph graph = new Graph(false);
         graph.addEdge(0, 1, 2);
@@ -52,19 +52,6 @@ public class Dijkstra {
         //        System.out.println("Shortest path for 4 is: " + getShortestPath(parent, 4));
 
         iterativeDFS(graph3, 0);
-
-        for (int i = 0; i < 50; ++i) {
-            Runnable r = () -> {
-
-                int x = 1;
-                while (1 == 1) {
-                    ++x;
-                }
-
-            };
-
-            new Thread(r).start();
-        }
     }
 
     private static void iterativeDFS(Graph graph, int startIndex) {

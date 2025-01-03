@@ -13,6 +13,7 @@ import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +23,9 @@ import java.util.Map;
 public class KafkaConfig {
 
     public static final String ITEMS_TOPIC = "items-topic";
+    public static final String ITEMS_ANALYTICS_ACTION_TOPIC = "items-analytics-action-topic";
+
+    public static final String ITEMS_ANALYTICS_AGGREGATION_ACTION_TOPIC = "items-analytics-aggregation-action-topic";
 
     @Bean
     public NewTopic topic() {
@@ -33,7 +37,7 @@ public class KafkaConfig {
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         props.put(ProducerConfig.ACKS_CONFIG, "0");
         return props;
     }

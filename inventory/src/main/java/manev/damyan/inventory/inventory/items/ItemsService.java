@@ -1,17 +1,16 @@
 package manev.damyan.inventory.inventory.items;
 
-import brave.internal.extra.MapExtra;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import manev.damyan.inventory.inventory.analytics.ItemReportingDTO;
 import manev.damyan.inventory.inventory.config.kafka.KafkaConfig;
 import manev.damyan.inventory.inventory.inventory.cache.RedisInventoryItem;
 import manev.damyan.inventory.inventory.inventory.cache.RedisItemRepository;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
-import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,9 +19,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.support.HeaderMapper;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,19 +58,21 @@ public class ItemsService {
 
     @Transactional //this is needed, because of the pessimistic locking
     //    @CacheEvict(cacheNames = ITEMS_CACHE, key = ALL)
-    public boolean update(ItemDTO dto) throws JsonProcessingException {
-        boolean existing = itemRepository.findByIdWithPessimisticLock(dto.getId()).isPresent();
-        Optional<Item> oldItemEntity = itemRepository.findById(dto.getId());
+    public boolean update(long id, ItemDTO dto) throws JsonProcessingException {
+        boolean existing = itemRepository.findByIdWithPessimisticLock(id).isPresent();
+        Optional<Item> oldItemEntity = itemRepository.findById(id);
         ItemDTO oldItemDTO = oldItemEntity.isPresent() ? mapper.convertToDTO(oldItemEntity.get()) : null;
         itemRepository.save(mapper.convertToEntity(dto));
 
-        String reportJson = jsonMapper.writeValueAsString(new ItemReportingDTO("update", oldItemDTO, dto));
-        Message<String> producerRecord = MessageBuilder.withPayload(reportJson)
+        dto.setId(id);
+        ItemReportingDTO reportingItem = new ItemReportingDTO("update", oldItemDTO, dto);
 
-                .setHeader("SourceApp", "Inventory").build();
+        ProducerRecord<String, ItemReportingDTO> record = new ProducerRecord<>(KafkaConfig.ITEMS_TOPIC, null, String.valueOf(id), reportingItem,
+                                                                               Arrays.asList(new RecordHeader("SourceApp", "Inventory".getBytes())));
 
-        CompletableFuture<SendResult<String, String>> send = kafkaTemplate.send(KafkaConfig.ITEMS_TOPIC, String.valueOf(dto.getId()), producerRecord);
-        send.whenComplete(completetionKafkaReporter(dto.getId()));
+
+        CompletableFuture<SendResult<String, String>> send = kafkaTemplate.send(record);
+        send.whenComplete(completetionKafkaReporter(id));
 
         return existing;
     }
@@ -85,16 +83,17 @@ public class ItemsService {
 
         Item savedItem = itemRepository.save(mapper.convertToEntity(dto));
 
-        String reportJson = jsonMapper.writeValueAsString(new ItemReportingDTO("create", null, dto));
+        ItemDTO result = mapper.convertToDTO(savedItem);
+        ItemReportingDTO reportingItem = new ItemReportingDTO("create", null, result);
 
-        ProducerRecord<String, String> record = new ProducerRecord<>(KafkaConfig.ITEMS_TOPIC, null, String.valueOf(savedItem.getId()), reportJson,
+        ProducerRecord<String, ItemReportingDTO> record = new ProducerRecord<>(KafkaConfig.ITEMS_TOPIC, null, String.valueOf(savedItem.getId()), reportingItem,
                                                                      Arrays.asList(new RecordHeader("SourceApp", "Inventory".getBytes())));
         CompletableFuture<SendResult<String, String>> send = kafkaTemplate.send(record);
         send.whenComplete(completetionKafkaReporter(savedItem.getId()));
 
         //        redisItemRepository.save(
         //                new RedisInventoryItem(savedItem.getId(), savedItem.getName(), savedItem.getType(), savedItem.getDetailedDescription()));
-        return mapper.convertToDTO(savedItem);
+        return result;
     }
     //    @CacheEvict(cacheNames = ITEMS_CACHE, key = ALL)
 
@@ -105,8 +104,8 @@ public class ItemsService {
         } else {
             Optional<Item> oldItemEntity = itemRepository.findById(id);
             ItemDTO oldItemDTO = oldItemEntity.isPresent() ? mapper.convertToDTO(oldItemEntity.get()) : null;
-            String reportJson = jsonMapper.writeValueAsString(new ItemReportingDTO("delete", oldItemDTO, null));
-            CompletableFuture<SendResult<String, String>> send = kafkaTemplate.send(KafkaConfig.ITEMS_TOPIC, String.valueOf(id), reportJson);
+            ItemReportingDTO reportingItem = new ItemReportingDTO("delete", oldItemDTO, null);
+            CompletableFuture<SendResult<String, String>> send = kafkaTemplate.send(KafkaConfig.ITEMS_TOPIC, String.valueOf(id), reportingItem);
             send.whenComplete(completetionKafkaReporter(id));
 
             itemRepository.deleteById(id);
@@ -135,8 +134,8 @@ public class ItemsService {
         } else {
             ItemDTO value = mapper.convertToDTO(entity.get());
 
-            String reportJson = jsonMapper.writeValueAsString(new ItemReportingDTO("get", value, null));
-            CompletableFuture<SendResult<String, String>> send = kafkaTemplate.send(KafkaConfig.ITEMS_TOPIC, String.valueOf(id), reportJson);
+            ItemReportingDTO reportingItem = new ItemReportingDTO("get", value, null);
+            CompletableFuture<SendResult<String, String>> send = kafkaTemplate.send(KafkaConfig.ITEMS_TOPIC, String.valueOf(id), reportingItem);
             send.whenComplete(completetionKafkaReporter(id));
 
             value.getName();

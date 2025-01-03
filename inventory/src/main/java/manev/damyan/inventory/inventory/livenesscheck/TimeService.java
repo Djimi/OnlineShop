@@ -13,8 +13,13 @@ public class TimeService {
 
     @Async("DPMtaskExecutor")
     public CompletableFuture<String> getCurrentTime(int requestId) throws InterruptedException {
-      log.info("Start checking the time in TimeService for request:" + requestId + " on thread: " + Thread.currentThread().getName());
-      Thread.sleep(2000);
+        log.info("Start checking the time in TimeService for request:" + requestId + " on thread: " + Thread.currentThread().getName());
+        Thread.sleep(3000);
         return CompletableFuture.completedFuture(ZonedDateTime.now().toString());
     }
 }
+
+
+
+
+

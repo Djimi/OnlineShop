@@ -1,6 +1,7 @@
-package manev.damyan.inventory.inventory.items;
+package manev.damyan.inventory.inventory.analytics;
 
 import lombok.Data;
+import manev.damyan.inventory.inventory.items.ItemDTO;
 
 @Data
 public class ItemReportingDTO {

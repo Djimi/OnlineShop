@@ -130,7 +130,9 @@ public class ItemController {
     @PutMapping("{id}")
     public ResponseEntity<ItemDTO> updateItem(@PathVariable(name = "id") long id, @RequestBody @Valid ItemDTO dto) throws JsonProcessingException {
 
-        boolean created = itemsService.update(dto);
+        boolean created = itemsService.update(id, dto);
+
+        dto.setId(id);
 
         if (created) {
             return ResponseEntity.status(HttpStatus.CREATED).body(dto);
